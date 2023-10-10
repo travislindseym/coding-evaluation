@@ -24,10 +24,43 @@ namespace MyOrganization
          * @param title
          * @return the newly filled position or empty if no position has that title
          */
+        private static int nextIdentifier = 1;
         public Position? Hire(Name person, string title)
         {
-            //your code here
-            return null;
+            Position positionToFill = FindPosition(root, title);
+            if (positionToFill == null)
+            {
+                return null;
+            }
+            else if (positionToFill.IsFilled())
+            {
+                throw new Exception("Position is already filled");
+            }
+            else
+            {
+                Employee newEmployee = new Employee(nextIdentifier++, person);
+                positionToFill.SetEmployee(newEmployee);
+                return positionToFill;
+            }
+        }
+        private Position? FindPosition(Position position, string title)
+        {
+            if (position.GetTitle() == title)
+            {
+                return position;
+            }
+            else
+            {
+                foreach (Position directReport in position.GetDirectReports())
+                {
+                    Position foundPosition = FindPosition(directReport, title);
+                    if (foundPosition != null)
+                    {
+                        return foundPosition;
+                    }
+                }
+                return null;
+            }
         }
 
         override public string ToString()
